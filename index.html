@@ -663,7 +663,6 @@ let score, playerX, playerY, targetX, targetY, playerScale;
 let preyList, particles, combos;
 let gameRunning, gameLoopId;
 let facingRight = true;
-let gameTimeLeft, timerInterval;
 let highScore = parseInt(localStorage.getItem('dongsAquariumHighScore')) || 0;
 const MAX_SCALE = 3.0; // 最大尺寸，到达即通关
 
@@ -682,7 +681,6 @@ function initGameState() {
   combos = [];
   facingRight = true;
   gameRunning = true;
-  gameTimeLeft = GAME_DURATION;
   document.getElementById('gameScoreDisplay').textContent = '0';
   document.getElementById('sizeDisplay').textContent = '1.0x';
   document.getElementById('timerDisplay').textContent = '1.0x / ' + MAX_SCALE.toFixed(1) + 'x';
