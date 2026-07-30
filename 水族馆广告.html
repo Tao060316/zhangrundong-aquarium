@@ -533,8 +533,8 @@
           <span style="color:#ff8c00;font-size:16px;" id="sizeDisplay">1.0x</span>
         </div>
         <div style="text-align:right;">
-          <span class="game-score-label">⏱️ 剩余时间</span>
-          <span style="color:#ff6b6b;font-size:16px;" id="timerDisplay">60s</span>
+          <span class="game-score-label">🎯 目标尺寸</span>
+          <span style="color:#ff8c00;font-size:16px;" id="timerDisplay">1.0x / 3.0x</span>
         </div>
       </div>
       <canvas id="gameCanvas" width="780" height="460" style="width:100%;height:auto;display:block;"></canvas>
@@ -665,7 +665,7 @@ let gameRunning, gameLoopId;
 let facingRight = true;
 let gameTimeLeft, timerInterval;
 let highScore = parseInt(localStorage.getItem('dongsAquariumHighScore')) || 0;
-const GAME_DURATION = 60; // 游戏时长60秒
+const MAX_SCALE = 3.0; // 最大尺寸，到达即通关
 
 const BASE_SIZE = 50;
 
@@ -685,8 +685,7 @@ function initGameState() {
   gameTimeLeft = GAME_DURATION;
   document.getElementById('gameScoreDisplay').textContent = '0';
   document.getElementById('sizeDisplay').textContent = '1.0x';
-  document.getElementById('timerDisplay').textContent = gameTimeLeft + 's';
-  document.getElementById('timerDisplay').style.color = '#ff6b6b';
+  document.getElementById('timerDisplay').textContent = '1.0x / ' + MAX_SCALE.toFixed(1) + 'x';
 }
 
 /* ── 获取玩家鱼尺寸 ── */
@@ -1172,15 +1171,20 @@ function gameLoop() {
     if (p.alive && checkCollision(p)) {
       p.alive = false;
       score += p.type.points;
-      // 每吃5个变大一次
-      const totalEaten = parseInt(document.getElementById('gameScoreDisplay').textContent) || 0;
-      const newEatenCount = Math.floor(score / 50); // 每50分升一级
-      const oldEatenCount = Math.floor((score - p.type.points) / 50);
-      if (newEatenCount > oldEatenCount) {
-        playerScale = Math.min(4, 1 + newEatenCount * 0.25);
+      // 每50分长大一级，最大到MAX_SCALE
+      const newScale = Math.min(MAX_SCALE, 1 + Math.floor(score / 50) * 0.25);
+      if (newScale > playerScale) {
+        playerScale = newScale;
+        document.getElementById('sizeDisplay').textContent = playerScale.toFixed(1) + 'x';
+        document.getElementById('timerDisplay').textContent = playerScale.toFixed(1) + 'x / ' + MAX_SCALE.toFixed(1) + 'x';
       }
       spawnParticles(p.x, p.y, p.type.bodyColor);
       spawnCombo(p.x, p.y, '+' + p.type.points);
+
+      // 达到最大尺寸 → 通关！
+      if (playerScale >= MAX_SCALE) {
+        endGame();
+      }
     }
 
     // 移出屏幕则移除
@@ -1254,26 +1258,8 @@ function startGame() {
   initGameState();
   document.getElementById('gameStartOverlay').style.display = 'none';
   document.getElementById('gameOverOverlay').style.display = 'none';
-  document.getElementById('gameScoreDisplay').textContent = '0';
-  document.getElementById('sizeDisplay').textContent = '1.0x';
-  document.getElementById('timerDisplay').textContent = GAME_DURATION + 's';
 
-  // 清除旧计时器
   if (timerInterval) clearInterval(timerInterval);
-
-  // 倒计时
-  timerInterval = setInterval(function() {
-    if (!gameRunning) { clearInterval(timerInterval); return; }
-    gameTimeLeft--;
-    document.getElementById('timerDisplay').textContent = gameTimeLeft + 's';
-    if (gameTimeLeft <= 10) {
-      document.getElementById('timerDisplay').style.color = '#ff4444';
-    }
-    if (gameTimeLeft <= 0) {
-      clearInterval(timerInterval);
-      endGame();
-    }
-  }, 1000);
 
   // 初始生成一些猎物
   for (let i = 0; i < 8; i++) spawnPrey();
@@ -1300,7 +1286,10 @@ function endGame() {
   const overlay = document.getElementById('gameOverOverlay');
   overlay.style.display = 'flex';
 
-  if (score >= 200) {
+  if (playerScale >= MAX_SCALE) {
+    document.getElementById('gameOverTitle').textContent = '🐟 东哥已称霸海洋！🐟';
+    document.getElementById('gameOverMsg').textContent = '东哥已经吃到最大了！你太厉害了！';
+  } else if (score >= 200) {
     document.getElementById('gameOverTitle').textContent = '🐟 水族之王！东哥无敌！🐟';
     document.getElementById('gameOverMsg').textContent = '你是真正的吃鱼高手！赶紧下单奖励自己吧！';
   } else if (score >= 100) {
