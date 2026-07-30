@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐟 张润东水族馆 — 你永远可以相信东哥！</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(180deg, #001f3f 0%, #003366 20%, #006994 40%, #00a8cc 60%, #00d2ff 80%, #87ceeb 100%);
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* ===== 气泡背景动画 ===== */
+  .bubbles {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .bubble {
+    position: absolute; bottom: -150px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), rgba(255,255,255,0.05));
+    border-radius: 50%; animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(0) scale(1); opacity: 0.6; }
+    50%  { opacity: 0.3; }
+    100% { transform: translateY(-110vh) scale(0.3); opacity: 0; }
+  }
+
+  /* ===== 水波纹 ===== */
+  .water-ripple {
+    position: fixed; bottom: 0; left: 0; width: 200%; height: 80px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent, transparent 40px,
+      rgba(255,255,255,0.06) 40px, rgba(255,255,255,0.06) 80px
+    );
+    animation: ripple 4s linear infinite; z-index: 0; pointer-events: none;
+  }
+  @keyframes ripple { 0% { transform: translateX(0); } 100% { transform: translateX(-80px); } }
+
+  /* ===== 容器 ===== */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 1; }
+
+  /* ===== 顶部横幅 ===== */
+  .top-bar {
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+    text-align: center; padding: 8px 20px; font-size: 14px;
+    letter-spacing: 2px; border-bottom: 2px solid rgba(255,215,0,0.5);
+    animation: glowBar 2s ease-in-out infinite alternate;
+  }
+  @keyframes glowBar {
+    0% { border-bottom-color: rgba(255,215,0,0.3); }
+    100% { border-bottom-color: rgba(255,215,0,1); }
+  }
+  .top-bar span { animation: pulse 1.5s ease-in-out infinite; display: inline-block; }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.1); color: #ffd700; }
+  }
+
+  /* ===== 英雄区 ===== */
+  .hero {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; padding: 50px 0; gap: 40px;
+  }
+  .hero-text { flex: 1; min-width: 300px; }
+  .hero-text h1 {
+    font-size: 60px; font-weight: 900; line-height: 1.2;
+    background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    animation: shimmer 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(255,140,0,0.5));
+  }
+  @keyframes shimmer {
+    0%,100% { filter: drop-shadow(0 4px 8px rgba(255,140,0,0.5)) brightness(1); }
+    50% { filter: drop-shadow(0 4px 20px rgba(255,215,0,0.9)) brightness(1.2); }
+  }
+  .hero-text .subtitle {
+    font-size: 28px; margin: 10px 0; color: #87ceeb;
+    text-shadow: 0 0 20px rgba(135,206,235,0.8);
+  }
+  .hero-text .slogan {
+    font-size: 18px; color: #ccc; margin: 15px 0;
+    padding: 15px 25px; background: rgba(255,255,255,0.08);
+    border-left: 4px solid #ffd700; border-radius: 4px;
+    line-height: 1.8;
+  }
+  .hero-badge {
+    display: inline-block; background: linear-gradient(135deg, #ff4444, #ff6b6b);
+    padding: 10px 25px; border-radius: 50px; font-size: 16px;
+    font-weight: 700; margin-top: 10px;
+    animation: bounce 2s ease-in-out infinite;
+    box-shadow: 0 4px 20px rgba(255,68,68,0.5);
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* ===== 老板照片区 ===== */
+  .hero-photo {
+    flex: 0 0 auto; position: relative;
+  }
+  .photo-frame {
+    width: 320px; height: 380px;
+    border-radius: 20px; overflow: hidden;
+    border: 5px solid #ffd700;
+    box-shadow:
+      0 0 30px rgba(255,215,0,0.5),
+      0 0 60px rgba(255,140,0,0.3),
+      0 0 90px rgba(255,68,68,0.2);
+    position: relative;
+    animation: photoGlow 3s ease-in-out infinite alternate;
+  }
+  @keyframes photoGlow {
+    0% { box-shadow: 0 0 30px rgba(255,215,0,0.5), 0 0 60px rgba(255,140,0,0.3); }
+    100% { box-shadow: 0 0 50px rgba(255,215,0,0.8), 0 0 100px rgba(255,140,0,0.6), 0 0 150px rgba(255,68,68,0.4); }
+  }
+  .photo-frame img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    /* P图特效: 提亮+暖色调，打造亲民老板形象 */
+    filter: brightness(1.15) contrast(1.1) saturate(1.2) hue-rotate(-5deg);
+    transition: filter 0.3s;
+  }
+  .photo-frame:hover img {
+    filter: brightness(1.3) contrast(1.15) saturate(1.4) hue-rotate(0deg);
+  }
+  /* 皇冠装饰 */
+  .crown {
+    position: absolute; top: -45px; left: 50%; transform: translateX(-50%);
+    font-size: 50px; animation: crownFloat 2s ease-in-out infinite;
+    filter: drop-shadow(0 4px 8px rgba(255,215,0,0.8)); z-index: 2;
+  }
+  @keyframes crownFloat {
+    0%,100% { transform: translateX(-50%) translateY(0) rotate(-3deg); }
+    50% { transform: translateX(-50%) translateY(-8px) rotate(3deg); }
+  }
+  /* 金牌标签 */
+  .gold-label {
+    position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #001f3f; padding: 8px 25px; border-radius: 25px;
+    font-weight: 900; font-size: 15px; white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 2;
+    letter-spacing: 1px;
+  }
+  /* 墨镜特效 */
+  .sunglasses-overlay {
+    position: absolute; top: 28%; left: 50%; transform: translateX(-50%);
+    font-size: 70px; opacity: 0; transition: all 0.4s ease;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); z-index: 3;
+    pointer-events: none;
+  }
+  .photo-frame:hover .sunglasses-overlay { opacity: 1; }
+  /* 大拇指 */
+  .thumbs-up {
+    position: absolute; bottom: 60px; right: -15px;
+    font-size: 40px; animation: thumbBounce 1s ease-in-out infinite;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); z-index: 2;
+  }
+  @keyframes thumbBounce {
+    0%,100% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(-10deg) scale(1.15); }
+  }
+
+  /* ===== 统计条 ===== */
+  .stats-bar {
+    display: flex; justify-content: space-around; flex-wrap: wrap;
+    gap: 20px; padding: 30px;
+    background: rgba(255,255,255,0.08); backdrop-filter: blur(10px);
+    border-radius: 16px; margin: 30px 0;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 42px; font-weight: 900; color: #ffd700; }
+  .stat-label { font-size: 14px; color: #aaa; margin-top: 5px; }
+
+  /* ===== 产品区标题 ===== */
+  .section-title {
+    text-align: center; font-size: 36px; font-weight: 900;
+    margin: 50px 0 30px; position: relative;
+  }
+  .section-title::after {
+    content: ''; display: block; width: 80px; height: 3px;
+    background: #ffd700; margin: 15px auto 0; border-radius: 2px;
+  }
+
+  /* ===== 产品卡片 ===== */
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px; margin-bottom: 50px;
+  }
+  .product-card {
+    background: rgba(255,255,255,0.06); backdrop-filter: blur(15px);
+    border-radius: 20px; padding: 30px; text-align: center;
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: all 0.4s ease; cursor: pointer;
+    position: relative; overflow: hidden;
+  }
+  .product-card::before {
+    content: '';
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .product-card:hover { transform: translateY(-10px); border-color: rgba(255,215,0,0.5); }
+  .product-card:hover::before { opacity: 1; }
+  .product-card:hover { box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+  .product-emoji { font-size: 80px; margin-bottom: 15px; animation: float 3s ease-in-out infinite; }
+  .product-card:nth-child(2) .product-emoji { animation-delay: 0.3s; }
+  .product-card:nth-child(3) .product-emoji { animation-delay: 0.6s; }
+  .product-card:nth-child(4) .product-emoji { animation-delay: 0.9s; }
+  .product-card:nth-child(5) .product-emoji { animation-delay: 1.2s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .product-name { font-size: 26px; font-weight: 900; color: #ffd700; margin-bottom: 10px; }
+  .product-desc { font-size: 14px; color: #bbb; line-height: 1.7; margin-bottom: 15px; }
+  .product-tags { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px; }
+  .tag {
+    background: rgba(255,255,255,0.1); padding: 4px 14px;
+    border-radius: 20px; font-size: 12px; color: #87ceeb;
+  }
+  .product-price {
+    font-size: 32px; font-weight: 900;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .product-price .original {
+    font-size: 16px; color: #888; text-decoration: line-through;
+    -webkit-text-fill-color: #888; margin-right: 8px;
+  }
+
+  /* ===== CTA 按钮 ===== */
+  .cta-wrap { text-align: center; margin: 40px 0 60px; }
+  .btn-cta {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff4444, #ff6b6b, #ff4444);
+    background-size: 200% 200%;
+    color: #fff; padding: 18px 60px; border-radius: 50px;
+    font-size: 22px; font-weight: 900; text-decoration: none;
+    letter-spacing: 3px;
+    box-shadow: 0 8px 30px rgba(255,68,68,0.5);
+    animation: btnGlow 3s ease-in-out infinite;
+    transition: transform 0.3s;
+  }
+  .btn-cta:hover { transform: scale(1.05); }
+  @keyframes btnGlow {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* ===== 评价区 ===== */
+  .testimonials {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; margin-bottom: 50px;
+  }
+  .testimonial {
+    background: rgba(255,255,255,0.05); border-radius: 16px; padding: 25px;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+  }
+  .testimonial .stars { color: #ffd700; font-size: 20px; margin-bottom: 10px; }
+  .testimonial p { color: #ddd; font-size: 14px; line-height: 1.7; font-style: italic; }
+  .testimonial .author { color: #87ceeb; margin-top: 12px; font-size: 13px; }
+
+  /* ===== 底部 ===== */
+  .footer {
+    text-align: center; padding: 40px 20px;
+    background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .footer .highlight {
+    font-size: 24px; font-weight: 900; color: #ffd700;
+    animation: pulse 2s ease-in-out infinite; display: inline-block;
+  }
+  .footer p { color: #aaa; margin: 8px 0; font-size: 13px; }
+
+  /* ===== 鱼儿游动装饰 ===== */
+  .swimming-fish {
+    position: fixed; font-size: 30px; z-index: 0; pointer-events: none;
+    opacity: 0.3;
+    animation: swim linear infinite;
+  }
+  @keyframes swim {
+    0%   { left: -60px; }
+    100% { left: calc(100vw + 60px); }
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 768px) {
+    .hero { flex-direction: column-reverse; text-align: center; }
+    .hero-text h1 { font-size: 36px; }
+    .hero-text .subtitle { font-size: 20px; }
+    .photo-frame { width: 240px; height: 290px; margin: 0 auto; }
+    .section-title { font-size: 26px; }
+    .products { grid-template-columns: 1fr; }
+    .game-wrapper { max-width: 100%; border-radius: 12px; }
+    .game-header { font-size: 12px; padding: 8px 12px; }
+    .game-score { font-size: 16px; }
+    .game-hint { font-size: 11px; }
+    .btn-play { padding: 12px 35px; font-size: 17px; }
+  }
+
+  /* ===== 游戏区域 ===== */
+  .game-section {
+    margin: 40px 0; text-align: center;
+  }
+  .game-wrapper {
+    position: relative; display: inline-block;
+    border-radius: 20px; overflow: hidden;
+    border: 3px solid rgba(255,215,0,0.5);
+    box-shadow: 0 0 40px rgba(0,150,255,0.3), 0 10px 40px rgba(0,0,0,0.5);
+    background: #001a33;
+  }
+  .game-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 20px;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 15px; font-weight: 700;
+  }
+  .game-score { color: #ffd700; font-size: 20px; }
+  .game-score-label { color: #aaa; font-size: 12px; }
+  .game-hint { color: #87ceeb; font-size: 13px; animation: pulse 2s ease-in-out infinite; }
+  #gameCanvas { display: block; cursor: none; }
+  .game-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; z-index: 5;
+    background: rgba(0,0,0,0.75);
+  }
+  .game-overlay h3 { font-size: 32px; color: #ffd700; margin-bottom: 10px; }
+  .game-overlay p { color: #ccc; margin: 5px 0; font-size: 16px; }
+  .btn-play {
+    margin-top: 18px; padding: 14px 50px;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #001f3f; border: none; border-radius: 40px;
+    font-size: 20px; font-weight: 900; cursor: pointer;
+    letter-spacing: 2px;
+    box-shadow: 0 6px 25px rgba(255,215,0,0.5);
+    transition: transform 0.2s;
+  }
+  .btn-play:hover { transform: scale(1.08); }
+  .btn-play:active { transform: scale(0.95); }
+  .combo-text {
+    position: absolute; font-size: 22px; font-weight: 900;
+    color: #ffd700; pointer-events: none; z-index: 4;
+    animation: comboUp 1s ease-out forwards;
+    text-shadow: 0 0 10px rgba(255,215,0,0.8);
+  }
+  @keyframes comboUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(1.5); }
+  }
+</style>
+</head>
+<body>
+
+<!-- 气泡背景 -->
+<div class="bubbles" id="bubbles"></div>
+<div class="water-ripple"></div>
+
+<!-- 游动的鱼 -->
+<div class="swimming-fish" style="top:15%;animation-duration:18s;">🐠</div>
+<div class="swimming-fish" style="top:45%;animation-duration:22s;animation-delay:-7s;font-size:24px;">🐡</div>
+<div class="swimming-fish" style="top:70%;animation-duration:20s;animation-delay:-12s;font-size:28px;">🐟</div>
+
+<!-- 顶部跑马灯 -->
+<div class="top-bar" style="position:relative;z-index:2;">
+  🔥 <span>开业大酬宾</span> 🔥 全场水族宠物<b>买二送一</b> 🔥 张润东水族馆 — 品质保证，死了包赔 🔥 满200包邮 🔥
+</div>
+
+<div class="container">
+
+  <!-- 英雄区 -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>张润东水族馆</h1>
+      <p class="subtitle">🌊 你永远可以相信东哥！🌊</p>
+      <p class="slogan">
+        📍 <b>十年老店</b>，诚信经营<br>
+        🏆 专注水族宠物养殖与销售<br>
+        💯 每一条鱼、每一只虾，都是东哥亲自挑选<br>
+        🚚 全国发货，包活到家
+      </p>
+      <div class="hero-badge">⚡ 暑期特惠 全场8折 ⚡</div>
+    </div>
+
+    <div class="hero-photo">
+      <div class="photo-frame">
+        <div class="crown">👑</div>
+        <!-- 张润东本人照片 — 已P图: 提亮暖色调 + 悬浮皇冠 + hover墨镜特效 -->
+        <img src="微信图片_20220726180053.jpg" alt="张润东 — 水族馆创始人">
+        <div class="sunglasses-overlay">😎</div>
+        <div class="gold-label">🏅 水族之王·东哥 🏅</div>
+        <div class="thumbs-up">👍</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 数据条 -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-num" id="count-years">10+</div>
+      <div class="stat-label">年行业经验</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" id="count-customers">50000+</div>
+      <div class="stat-label">满意客户</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" id="count-species">200+</div>
+      <div class="stat-label">水族品种</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">⭐ 4.9</div>
+      <div class="stat-label">客户评分</div>
+    </div>
+  </div>
+
+  <!-- 明星产品 -->
+  <h2 class="section-title">🐚 明星产品 · 东哥推荐 🐚</h2>
+  <div class="products">
+
+    <!-- 寄居蟹 -->
+    <div class="product-card">
+      <div class="product-emoji">🦀</div>
+      <div class="product-name">精品寄居蟹</div>
+      <div class="product-desc">
+        多种螺壳可选，活泼好动，适合海水/淡水缸。<br>
+        自带小房子🏠，搬家就靠它！<br>
+        小朋友最爱，观察寄居蟹换壳超有趣！
+      </div>
+      <div class="product-tags">
+        <span class="tag">🐚 多壳可选</span>
+        <span class="tag">🌿 易饲养</span>
+        <span class="tag">👶 亲子互动</span>
+      </div>
+      <div class="product-price"><span class="original">¥58</span> ¥<span class="count-up">38</span>/只</div>
+    </div>
+
+    <!-- 鳄雀鳝 -->
+    <div class="product-card">
+      <div class="product-emoji">🐊</div>
+      <div class="product-name">霸气鳄雀鳝</div>
+      <div class="product-desc">
+        远古活化石！鳄鱼嘴巴+鱼的身体，霸气外露。<br>
+        镇缸之宝，朋友圈最靓的仔🔥<br>
+        皮实好养，吃小鱼小虾，长得飞快！
+      </div>
+      <div class="product-tags">
+        <span class="tag">🦖 活化石</span>
+        <span class="tag">💪 皮实耐养</span>
+        <span class="tag">📸 拍照神器</span>
+      </div>
+      <div class="product-price"><span class="original">¥388</span> ¥<span class="count-up">288</span>/条</div>
+    </div>
+
+    <!-- 小龙虾 -->
+    <div class="product-card">
+      <div class="product-emoji">🦞</div>
+      <div class="product-name">爆款小龙虾</div>
+      <div class="product-desc">
+        观赏+食用两不误！蓝色/红色/白色多种色系。<br>
+        繁殖能力强，一窝几十只，越养越多！<br>
+        东哥推荐：麻辣十三香，隔壁小孩馋哭了🤤
+      </div>
+      <div class="product-tags">
+        <span class="tag">🎨 多色可选</span>
+        <span class="tag">🔄 繁殖快</span>
+        <span class="tag">🍽️ 可观赏可食用</span>
+      </div>
+      <div class="product-price"><span class="original">¥28</span> ¥<span class="count-up">18</span>/只</div>
+    </div>
+
+    <!-- 鲶鱼 -->
+    <div class="product-card">
+      <div class="product-emoji">🐟</div>
+      <div class="product-name">黄金鲶鱼</div>
+      <div class="product-desc">
+        胡须飘飘，憨态可掬！清洁鱼缸小能手～<br>
+        吃残饵、清缸底，懒人养鱼必备！<br>
+        黄金色/黑色/花斑多品种，皮实不爱生病。
+      </div>
+      <div class="product-tags">
+        <span class="tag">🧹 清缸能手</span>
+        <span class="tag">😴 懒人必备</span>
+        <span class="tag">✨ 多品种</span>
+      </div>
+      <div class="product-price"><span class="original">¥68</span> ¥<span class="count-up">48</span>/条</div>
+    </div>
+
+    <!-- 乌龟 -->
+    <div class="product-card">
+      <div class="product-emoji">🐢</div>
+      <div class="product-name">招财神龟</div>
+      <div class="product-desc">
+        巴西龟/草龟/鳄龟/金钱龟，应有尽有！<br>
+        长寿吉祥物🐢，送礼自养两相宜。<br>
+        养好了能送你走... 传家宝级别宠物！
+      </div>
+      <div class="product-tags">
+        <span class="tag">🧧 招财纳福</span>
+        <span class="tag">🕰️ 长寿</span>
+        <span class="tag">🎁 送礼首选</span>
+      </div>
+      <div class="product-price"><span class="original">¥128</span> ¥<span class="count-up">88</span>/只</div>
+    </div>
+  </div>
+
+  <!-- ===== 大鱼吃小鱼游戏 ===== -->
+  <h2 class="section-title">🎮 东哥大鱼吃小鱼 🎮</h2>
+  <div class="game-section">
+    <div class="game-wrapper" id="gameWrapper">
+      <div class="game-header">
+        <div>
+          <span class="game-score-label">🏆 积分</span>
+          <span class="game-score" id="gameScoreDisplay">0</span>
+        </div>
+        <div style="text-align:center;">
+          <span class="game-score-label">🐟 东哥尺寸</span>
+          <span style="color:#ff8c00;font-size:16px;" id="sizeDisplay">1.0x</span>
+        </div>
+        <div style="text-align:right;">
+          <span class="game-score-label">⏱️ 剩余时间</span>
+          <span style="color:#ff6b6b;font-size:16px;" id="timerDisplay">60s</span>
+        </div>
+      </div>
+      <canvas id="gameCanvas" width="780" height="460" style="width:100%;height:auto;display:block;"></canvas>
+      <!-- 开始遮罩 -->
+      <div class="game-overlay" id="gameStartOverlay">
+        <h3>🐟 东哥大鱼吃小鱼 🐟</h3>
+        <p>鼠标控制<strong>张润东鱼</strong>，吃掉水族馆的小伙伴们！</p>
+        <p>🦀 寄居蟹 +10 &nbsp; 🦞 小龙虾 +15 &nbsp; 🐟 鲶鱼 +10</p>
+        <p>🐊 小鳄雀鳝 +20 &nbsp; 🐢 乌龟 +25</p>
+        <p style="font-size:13px;color:#888;">吃得越多，东哥的头越大！</p>
+        <button class="btn-play" onclick="startGame()">🎮 开始游戏</button>
+      </div>
+      <!-- 结束遮罩 -->
+      <div class="game-overlay" id="gameOverOverlay" style="display:none;">
+        <h3 id="gameOverTitle">🎉 太强了！</h3>
+        <p>最终积分: <strong id="finalScore" style="color:#ffd700;font-size:24px;">0</strong></p>
+        <p id="gameOverMsg" style="color:#87ceeb;"></p>
+        <button class="btn-play" onclick="startGame()">🔄 再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA按钮 -->
+  <div class="cta-wrap">
+    <a href="javascript:void(0)" class="btn-cta" onclick="document.getElementById('order-modal').style.display='flex'">
+      📞 立即联系东哥下单 📞
+    </a>
+  </div>
+
+  <!-- 客户评价 -->
+  <h2 class="section-title">💬 客户好评如潮 💬</h2>
+  <div class="testimonials">
+    <div class="testimonial">
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+      <p>"在别家买的鳄雀鳝三天就死了，东哥这家的养了两年还活蹦乱跳！东哥还手把手教我怎么养，太靠谱了！"</p>
+      <div class="author">— 隔壁老王（回头客×5）</div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+      <p>"买了三只寄居蟹给儿子当生日礼物，包装得跟快递粽子似的，到了全都生龙活虎！儿子开心得不得了！"</p>
+      <div class="author">— 宝妈小丽</div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+      <p>"东哥的小龙虾不光好看，下锅更好吃！一虾两用，血赚！重点是东哥人帅话不多，就俩字：靠谱！"</p>
+      <div class="author">— 吃货老张</div>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div class="footer">
+    <p class="highlight">📱 联系电话：13424279538 &nbsp;|&nbsp; 💬 微信：ZhangRunDong_888</p>
+    <p>📍 地址：XXXX省XXXX市XXXX路XX号张润东水族馆 &nbsp;|&nbsp; 🕘 营业时间：早9:00 ~ 晚21:00</p>
+    <p style="margin-top:15px;">© 2026 张润东水族馆 — <span style="color:#ffd700;">东哥出品，必属精品。买水族，找东哥就对了！</span></p>
+  </div>
+</div>
+
+<!-- 弹窗 -->
+<div id="order-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:999;justify-content:center;align-items:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:linear-gradient(135deg,#003366,#006994);border-radius:20px;padding:40px;text-align:center;max-width:450px;border:2px solid #ffd700;box-shadow:0 0 50px rgba(255,215,0,0.5);">
+    <div style="font-size:60px;">🎉</div>
+    <h2 style="font-size:28px;margin:15px 0;color:#ffd700;">下单就找张润东！</h2>
+    <p style="font-size:16px;color:#ccc;line-height:2;">
+      📱 <b style="color:#fff;">电话：13424279538</b><br>
+      💬 <b style="color:#fff;">微信：ZhangRunDong_888</b><br>
+      🚚 全国包邮 · 包活到家<br>
+      💰 支持微信/支付宝/银行卡转账
+    </p>
+    <button onclick="document.getElementById('order-modal').style.display='none'" style="margin-top:15px;padding:12px 40px;border-radius:30px;border:none;background:#ffd700;color:#001f3f;font-size:16px;font-weight:700;cursor:pointer;">知道啦！马上下单 👈</button>
+  </div>
+</div>
+
+<!-- 生成气泡JS -->
+<script>
+(function() {
+  const container = document.getElementById('bubbles');
+  for (let i = 0; i < 30; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = Math.random() * 50 + 15;
+    b.style.width = size + 'px';
+    b.style.height = size + 'px';
+    b.style.left = Math.random() * 100 + '%';
+    b.style.animationDuration = (Math.random() * 10 + 8) + 's';
+    b.style.animationDelay = Math.random() * 10 + 's';
+    container.appendChild(b);
+  }
+})();
+
+// 数字滚动特效
+document.querySelectorAll('.count-up').forEach(el => {
+  const target = parseInt(el.textContent);
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = current;
+  }, 40);
+});
+</script>
+<!-- ===== 大鱼吃小鱼游戏 JS ===== -->
+<script>
+/* ── 预加载张润东照片 ── */
+const dongImg = new Image();
+dongImg.src = '微信图片_20220726180053.jpg';
+
+/* ── 画布 & 上下文 ── */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const W = canvas.width;
+const H = canvas.height;
+
+/* ── 猎物类型 ── */
+const PREY_TYPES = [
+  { name: '寄居蟹', emoji: '🦀', bodyColor: '#e8b88a', shellColor: '#c4956a', points: 10, baseSpeed: 2.2, baseSize: 24 },
+  { name: '小龙虾', emoji: '🦞', bodyColor: '#e74c3c', shellColor: '#c0392b', points: 15, baseSpeed: 2.8, baseSize: 26 },
+  { name: '鲶鱼',    emoji: '🐟', bodyColor: '#95a5a6', shellColor: '#7f8c8d', points: 10, baseSpeed: 3.2, baseSize: 22 },
+  { name: '乌龟',    emoji: '🐢', bodyColor: '#2ecc71', shellColor: '#1e8449', points: 25, baseSpeed: 1.3, baseSize: 30 },
+  { name: '小鳄雀鳝', emoji: '🐊', bodyColor: '#5d6d7e', shellColor: '#2c3e50', points: 20, baseSpeed: 3.0, baseSize: 30 }
+];
+
+/* ── 游戏状态 ── */
+let score, playerX, playerY, targetX, targetY, playerScale;
+let preyList, particles, combos;
+let gameRunning, gameLoopId;
+let facingRight = true;
+let gameTimeLeft, timerInterval;
+let highScore = parseInt(localStorage.getItem('dongsAquariumHighScore')) || 0;
+const GAME_DURATION = 60; // 游戏时长60秒
+
+const BASE_SIZE = 50;
+
+/* ── 初始化 ── */
+function initGameState() {
+  score = 0;
+  playerX = W / 2;
+  playerY = H / 2;
+  targetX = W / 2;
+  targetY = H / 2;
+  playerScale = 1;
+  preyList = [];
+  particles = [];
+  combos = [];
+  facingRight = true;
+  gameRunning = true;
+  gameTimeLeft = GAME_DURATION;
+  document.getElementById('gameScoreDisplay').textContent = '0';
+  document.getElementById('sizeDisplay').textContent = '1.0x';
+  document.getElementById('timerDisplay').textContent = gameTimeLeft + 's';
+}
+
+/* ── 获取玩家鱼尺寸 ── */
+function playerSize() { return BASE_SIZE * playerScale; }
+
+/* ── 生成猎物 ── */
+function spawnPrey() {
+  if (!gameRunning) return;
+  const type = PREY_TYPES[Math.floor(Math.random() * PREY_TYPES.length)];
+  const size = type.baseSize + Math.random() * 8;
+  const fromEdge = Math.floor(Math.random() * 4); // 0:左 1:右 2:上 3:下
+  let x, y, vx, vy;
+  const speed = type.baseSpeed + Math.random() * 1.5;
+  const margin = 50;
+  switch (fromEdge) {
+    case 0: x = -margin; y = Math.random() * H; vx = speed; vy = (Math.random() - 0.5) * speed; break;
+    case 1: x = W + margin; y = Math.random() * H; vx = -speed; vy = (Math.random() - 0.5) * speed; break;
+    case 2: x = Math.random() * W; y = -margin; vx = (Math.random() - 0.5) * speed; vy = speed; break;
+    case 3: x = Math.random() * W; y = H + margin; vx = (Math.random() - 0.5) * speed; vy = -speed; break;
+  }
+  preyList.push({ type, x, y, vx, vy, size, alive: true, wobble: Math.random() * Math.PI * 2, wobbleSpeed: 0.02 + Math.random() * 0.04 });
+}
+
+/* ── 吃猎物粒子效果 ── */
+function spawnParticles(x, y, color) {
+  for (let i = 0; i < 12; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2 + Math.random() * 4;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      decay: 0.02 + Math.random() * 0.03,
+      color,
+      size: 2 + Math.random() * 4
+    });
+  }
+}
+
+/* ── 飘字效果 ── */
+function spawnCombo(x, y, text) {
+  combos.push({ x, y, text, life: 1 });
+  // 更新顶部积分显示
+  document.getElementById('gameScoreDisplay').textContent = score;
+  document.getElementById('sizeDisplay').textContent = playerScale.toFixed(1) + 'x';
+}
+
+/* ── 鼠标追踪 ── */
+canvas.addEventListener('mousemove', function(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  targetX = (e.clientX - rect.left) * scaleX;
+  targetY = (e.clientY - rect.top) * scaleY;
+});
+
+// 触摸支持
+canvas.addEventListener('touchmove', function(e) {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  targetX = (e.touches[0].clientX - rect.left) * scaleX;
+  targetY = (e.touches[0].clientY - rect.top) * scaleY;
+}, { passive: false });
+
+canvas.addEventListener('touchstart', function(e) {
+  e.preventDefault();
+  if (!gameRunning) { startGame(); return; }
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  targetX = (e.touches[0].clientX - rect.left) * scaleX;
+  targetY = (e.touches[0].clientY - rect.top) * scaleY;
+}, { passive: false });
+
+/* ── 绘制海底背景 ── */
+function drawBackground() {
+  // 海水渐变
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#003d66');
+  grad.addColorStop(0.3, '#005580');
+  grad.addColorStop(0.7, '#006994');
+  grad.addColorStop(1, '#003d5c');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // 沙地
+  ctx.fillStyle = '#c4a35a';
+  ctx.beginPath();
+  ctx.moveTo(0, H - 25);
+  for (let x = 0; x < W; x += 30) {
+    ctx.lineTo(x, H - 25 + Math.sin(x * 0.03) * 8);
+  }
+  ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+  ctx.fill();
+
+  // 水草
+  ctx.strokeStyle = '#2d8a4e';
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 8; i++) {
+    const sx = 50 + i * 100 + Math.random() * 30;
+    const sh = 40 + Math.random() * 60;
+    ctx.beginPath();
+    ctx.moveTo(sx, H - 25);
+    ctx.quadraticCurveTo(sx + 15, H - 25 - sh / 2, sx + Math.sin(Date.now() / 2000 + i) * 10, H - 25 - sh);
+    ctx.stroke();
+    ctx.strokeStyle = '#3cb371';
+  }
+
+  // 海底石头
+  ctx.fillStyle = '#5c5c5c';
+  for (let i = 0; i < 6; i++) {
+    const rx = 100 + i * 130;
+    const ry = H - 22 + Math.sin(i * 2) * 5;
+    ctx.beginPath();
+    ctx.ellipse(rx, ry, 15 + Math.random() * 10, 8 + Math.random() * 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+/* ── 绘制张润东鱼 ── */
+function drawDongFish() {
+  const size = playerSize();
+  const x = playerX;
+  const y = playerY;
+  const dir = facingRight ? 1 : -1;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(dir, 1);
+
+  // 阴影
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetY = 4;
+
+  // --- 鱼尾 ---
+  const tailX = -size * 0.85;
+  const tailY = 0;
+  ctx.fillStyle = '#e67e22';
+  ctx.beginPath();
+  ctx.moveTo(tailX, tailY);
+  ctx.lineTo(tailX - size * 0.45, tailY - size * 0.45);
+  ctx.lineTo(tailX - size * 0.55, tailY);
+  ctx.lineTo(tailX - size * 0.45, tailY + size * 0.45);
+  ctx.closePath();
+  ctx.fill();
+
+  // --- 鱼身 ---
+  const bodyGrad = ctx.createRadialGradient(size * 0.05, -size * 0.1, size * 0.05, 0, 0, size * 1.1);
+  bodyGrad.addColorStop(0, '#ffd700');
+  bodyGrad.addColorStop(0.5, '#f39c12');
+  bodyGrad.addColorStop(1, '#d35400');
+  ctx.fillStyle = bodyGrad;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, size * 0.95, size * 0.55, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 鱼鳞纹理
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  for (let i = -2; i <= 2; i++) {
+    for (let j = -1; j <= 1; j++) {
+      ctx.beginPath();
+      ctx.arc(i * size * 0.25, j * size * 0.25, size * 0.16, 0, Math.PI);
+      ctx.stroke();
+    }
+  }
+
+  // --- 背鳍 ---
+  ctx.fillStyle = '#e67e22';
+  ctx.beginPath();
+  ctx.moveTo(size * 0.2, -size * 0.5);
+  ctx.quadraticCurveTo(-size * 0.1, -size * 0.85, -size * 0.5, -size * 0.5);
+  ctx.quadraticCurveTo(-size * 0.2, -size * 0.5, size * 0.1, -size * 0.48);
+  ctx.closePath();
+  ctx.fill();
+
+  // --- 腹鳍 ---
+  ctx.fillStyle = '#d68910';
+  ctx.beginPath();
+  ctx.moveTo(size * 0.1, size * 0.45);
+  ctx.quadraticCurveTo(-size * 0.15, size * 0.7, -size * 0.35, size * 0.5);
+  ctx.quadraticCurveTo(-size * 0.1, size * 0.45, size * 0.05, size * 0.42);
+  ctx.closePath();
+  ctx.fill();
+
+  // --- 胸鳍 ---
+  ctx.fillStyle = '#e67e22';
+  ctx.beginPath();
+  ctx.moveTo(size * 0.4, size * 0.1);
+  ctx.quadraticCurveTo(size * 0.3, size * 0.5, size * 0.55, size * 0.28);
+  ctx.quadraticCurveTo(size * 0.45, size * 0.15, size * 0.4, size * 0.05);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
+  // --- 头部: 张润东照片（圆形裁剪） ---
+  const headRadius = size * 0.38;
+  const headX = size * 0.55;
+  const headY = 0;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(headX, headY, headRadius, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+  // 绘制照片
+  if (dongImg.complete && dongImg.naturalWidth > 0) {
+    const imgScale = headRadius * 2 / Math.min(dongImg.naturalWidth, dongImg.naturalHeight);
+    const iw = dongImg.naturalWidth * imgScale;
+    const ih = dongImg.naturalHeight * imgScale;
+    ctx.drawImage(dongImg, headX - iw / 2, headY - ih / 2, iw, ih);
+  } else {
+    // 照片未加载时用颜色填充
+    const faceGrad = ctx.createRadialGradient(headX, headY, headRadius * 0.1, headX, headY, headRadius);
+    faceGrad.addColorStop(0, '#fdbcb4');
+    faceGrad.addColorStop(1, '#e8a090');
+    ctx.fillStyle = faceGrad;
+    ctx.fill();
+    // 简易五官
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(headX - headRadius * 0.25, headY - headRadius * 0.15, headRadius * 0.08, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(headX + headRadius * 0.25, headY - headRadius * 0.15, headRadius * 0.08, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(headX, headY + headRadius * 0.2, headRadius * 0.12, 0, Math.PI); ctx.stroke();
+  }
+  ctx.restore();
+
+  // 照片边框
+  ctx.strokeStyle = '#ffd700';
+  ctx.lineWidth = size * 0.04;
+  ctx.beginPath();
+  ctx.arc(headX, headY, headRadius, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 头环光晕
+  ctx.strokeStyle = 'rgba(255,215,0,0.5)';
+  ctx.lineWidth = size * 0.025;
+  ctx.beginPath();
+  ctx.arc(headX, headY, headRadius + size * 0.03, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // --- 眼睛 (在照片前方) ---
+  const eyeX = headX + headRadius * 0.65;
+  const eyeY = headY - headRadius * 0.1;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(eyeX, eyeY, headRadius * 0.22, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(eyeX + headRadius * 0.05, eyeY, headRadius * 0.1, 0, Math.PI * 2);
+  ctx.fill();
+  // 眼睛高光
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(eyeX + headRadius * 0.02, eyeY - headRadius * 0.05, headRadius * 0.04, 0, Math.PI * 2);
+  ctx.fill();
+
+  // --- 嘴巴 ---
+  const mouthX = headX + headRadius * 0.75;
+  ctx.strokeStyle = '#c0392b';
+  ctx.lineWidth = size * 0.03;
+  ctx.beginPath();
+  ctx.arc(mouthX - headRadius * 0.15, headY + headRadius * 0.15, headRadius * 0.18, 0.2, Math.PI * 0.7);
+  ctx.stroke();
+
+  // --- "东"字标签 ---
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${size * 0.24}px "Microsoft YaHei"`;
+  ctx.textAlign = 'center';
+  ctx.fillText('东', -size * 0.1, -size * 0.35);
+
+  ctx.restore();
+}
+
+/* ── 绘制猎物 ── */
+function drawPrey(p) {
+  const { type, x, y, size } = p;
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  // 抖动动画
+  p.wobble += p.wobbleSpeed;
+  const wobbleY = Math.sin(p.wobble) * 3;
+  const wobbleR = Math.sin(p.wobble * 1.5) * 0.08;
+
+  // 面向移动方向
+  const dir = p.vx > 0 ? 1 : -1;
+  ctx.scale(dir, 1);
+  ctx.rotate(wobbleR);
+
+  // 阴影
+  ctx.shadowColor = 'rgba(0,0,0,0.3)';
+  ctx.shadowBlur = 5;
+
+  if (type.name === '寄居蟹') {
+    // 螺壳
+    ctx.fillStyle = type.shellColor;
+    ctx.beginPath();
+    ctx.arc(0, wobbleY, size * 0.7, 0, Math.PI * 2);
+    ctx.fill();
+    // 螺旋纹
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1;
+    for (let r = 0; r < 3; r++) {
+      ctx.beginPath();
+      ctx.arc(0, wobbleY, size * (0.5 - r * 0.18), r * 0.3, Math.PI * 1.5);
+      ctx.stroke();
+    }
+    // 腿
+    ctx.fillStyle = type.bodyColor;
+    for (let i = -2; i <= 2; i++) {
+      ctx.fillRect(size * 0.5, wobbleY - size * 0.1 + i * size * 0.22, size * 0.5, size * 0.08);
+    }
+    // 钳子
+    ctx.fillStyle = '#e74c3c';
+    ctx.beginPath();
+    ctx.arc(size * 0.7, wobbleY - size * 0.15, size * 0.18, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath();
+    ctx.arc(size * 0.7, wobbleY + size * 0.15, size * 0.18, 0, Math.PI * 2); ctx.fill();
+
+  } else if (type.name === '小龙虾') {
+    // 虾身
+    ctx.fillStyle = type.bodyColor;
+    ctx.beginPath();
+    ctx.ellipse(0, wobbleY, size * 0.8, size * 0.3, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 虾尾
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.7, wobbleY);
+    ctx.lineTo(-size * 1.1, wobbleY - size * 0.3);
+    ctx.lineTo(-size * 1.0, wobbleY);
+    ctx.lineTo(-size * 1.1, wobbleY + size * 0.3);
+    ctx.closePath();
+    ctx.fill();
+    // 虾钳
+    ctx.fillStyle = '#c0392b';
+    ctx.beginPath(); ctx.ellipse(size * 0.75, wobbleY - size * 0.2, size * 0.2, size * 0.12, 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(size * 0.75, wobbleY + size * 0.2, size * 0.2, size * 0.12, -0.3, 0, Math.PI * 2); ctx.fill();
+    // 节段纹
+    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+    ctx.lineWidth = 1;
+    for (let i = -2; i <= 2; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * size * 0.2, wobbleY - size * 0.28);
+      ctx.lineTo(i * size * 0.2, wobbleY + size * 0.28);
+      ctx.stroke();
+    }
+
+  } else if (type.name === '鲶鱼') {
+    // 鱼身
+    ctx.fillStyle = type.bodyColor;
+    ctx.beginPath();
+    ctx.ellipse(0, wobbleY, size * 0.8, size * 0.35, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 尾
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.7, wobbleY);
+    ctx.lineTo(-size * 1.0, wobbleY - size * 0.3);
+    ctx.lineTo(-size * 0.9, wobbleY + size * 0.3);
+    ctx.closePath();
+    ctx.fill();
+    // 胡须
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(size * 0.6, wobbleY - size * 0.1); ctx.quadraticCurveTo(size * 1.0, wobbleY - size * 0.5, size * 0.9, wobbleY - size * 0.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(size * 0.6, wobbleY + size * 0.1); ctx.quadraticCurveTo(size * 1.0, wobbleY + size * 0.5, size * 0.9, wobbleY + size * 0.6); ctx.stroke();
+    // 眼
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(size * 0.35, wobbleY - size * 0.08, size * 0.08, 0, Math.PI * 2); ctx.fill();
+
+  } else if (type.name === '乌龟') {
+    // 龟壳
+    ctx.fillStyle = type.shellColor;
+    ctx.beginPath();
+    ctx.ellipse(0, wobbleY, size * 0.7, size * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 壳纹
+    ctx.strokeStyle = '#145a32';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(-size * 0.5, wobbleY); ctx.lineTo(size * 0.5, wobbleY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, wobbleY - size * 0.45); ctx.lineTo(0, wobbleY + size * 0.45); ctx.stroke();
+    // 头
+    ctx.fillStyle = type.bodyColor;
+    ctx.beginPath();
+    ctx.ellipse(size * 0.6, wobbleY, size * 0.3, size * 0.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 四肢
+    ctx.fillStyle = type.bodyColor;
+    ctx.beginPath(); ctx.ellipse(size * 0.15, wobbleY - size * 0.45, size * 0.2, size * 0.15, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(size * 0.15, wobbleY + size * 0.45, size * 0.2, size * 0.15, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(-size * 0.5, wobbleY - size * 0.4, size * 0.15, size * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(-size * 0.5, wobbleY + size * 0.4, size * 0.15, size * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+
+  } else if (type.name === '小鳄雀鳝') {
+    // 长条鱼身
+    ctx.fillStyle = type.bodyColor;
+    ctx.beginPath();
+    ctx.ellipse(0, wobbleY, size * 1.0, size * 0.25, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // 鳄鱼嘴
+    ctx.fillStyle = '#2c3e50';
+    ctx.beginPath();
+    ctx.moveTo(size * 0.7, wobbleY - size * 0.15);
+    ctx.lineTo(size * 1.3, wobbleY - size * 0.05);
+    ctx.lineTo(size * 0.7, wobbleY + size * 0.15);
+    ctx.closePath();
+    ctx.fill();
+    // 牙齿
+    ctx.fillStyle = '#fff';
+    for (let t = -1; t <= 1; t += 2) {
+      ctx.beginPath();
+      ctx.moveTo(size * 0.8, wobbleY + t * 0.02);
+      ctx.lineTo(size * 0.9, wobbleY + t * 0.12);
+      ctx.lineTo(size * 1.0, wobbleY + t * 0.02);
+      ctx.fill();
+    }
+    // 尾
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.9, wobbleY);
+    ctx.lineTo(-size * 1.2, wobbleY - size * 0.2);
+    ctx.lineTo(-size * 1.15, wobbleY + size * 0.2);
+    ctx.closePath();
+    ctx.fill();
+    // 眼
+    ctx.fillStyle = '#ff0';
+    ctx.beginPath(); ctx.arc(size * 0.5, wobbleY - size * 0.08, size * 0.08, 0, Math.PI * 2); ctx.fill();
+    // 鳞片纹理
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1;
+    for (let i = -3; i <= 3; i++) {
+      ctx.beginPath();
+      ctx.arc(i * size * 0.22, wobbleY, size * 0.12, 0, Math.PI);
+      ctx.stroke();
+    }
+  }
+
+  ctx.restore();
+}
+
+/* ── 碰撞检测 ── */
+function checkCollision(prey) {
+  const size = playerSize();
+  const mouthX = playerX + (facingRight ? 1 : -1) * size * 0.85;
+  const mouthY = playerY;
+  const eatRange = size * 0.55;
+  const dx = prey.x - mouthX;
+  const dy = prey.y - mouthY;
+  return Math.sqrt(dx * dx + dy * dy) < eatRange + prey.size * 0.5;
+}
+
+/* ── 主循环 ── */
+function gameLoop() {
+  if (!gameRunning) return;
+
+  // 平滑移动
+  playerX += (targetX - playerX) * 0.08;
+  playerY += (targetY - playerY) * 0.08;
+
+  // 边界限制
+  playerX = Math.max(playerSize() * 0.5, Math.min(W - playerSize() * 0.5, playerX));
+  playerY = Math.max(playerSize() * 0.5, Math.min(H - playerSize() * 0.5, playerY));
+
+  // 面向方向
+  if (Math.abs(targetX - playerX) > 2) {
+    facingRight = targetX > playerX;
+  }
+
+  // 更新猎物
+  for (let i = preyList.length - 1; i >= 0; i--) {
+    const p = preyList[i];
+    p.x += p.vx;
+    p.y += p.vy + Math.sin(p.wobble) * 0.5;
+    p.wobble += p.wobbleSpeed;
+
+    // 碰撞检测
+    if (p.alive && checkCollision(p)) {
+      p.alive = false;
+      score += p.type.points;
+      // 每吃5个变大一次
+      const totalEaten = parseInt(document.getElementById('gameScoreDisplay').textContent) || 0;
+      const newEatenCount = Math.floor(score / 50); // 每50分升一级
+      const oldEatenCount = Math.floor((score - p.type.points) / 50);
+      if (newEatenCount > oldEatenCount) {
+        playerScale = Math.min(4, 1 + newEatenCount * 0.25);
+      }
+      spawnParticles(p.x, p.y, p.type.bodyColor);
+      spawnCombo(p.x, p.y, '+' + p.type.points);
+    }
+
+    // 移出屏幕则移除
+    if (p.x < -100 || p.x > W + 100 || p.y < -100 || p.y > H + 100) {
+      preyList.splice(i, 1);
+    }
+  }
+
+  // 更新粒子
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const pt = particles[i];
+    pt.x += pt.vx;
+    pt.y += pt.vy;
+    pt.life -= pt.decay;
+    if (pt.life <= 0) particles.splice(i, 1);
+  }
+
+  // 更新飘字
+  for (let i = combos.length - 1; i >= 0; i--) {
+    combos[i].life -= 0.02;
+    combos[i].y -= 1.2;
+    if (combos[i].life <= 0) combos.splice(i, 1);
+  }
+
+  // 生成猎物 (保持屏幕上有10-15个)
+  if (preyList.length < 10 + Math.floor(Math.random() * 6)) {
+    spawnPrey();
+  }
+
+  // --- 绘制 ---
+  ctx.clearRect(0, 0, W, H);
+  drawBackground();
+
+  // 绘制所有猎物
+  preyList.forEach(p => { if (p.alive) drawPrey(p); });
+
+  // 绘制张润东鱼
+  drawDongFish();
+
+  // 绘制粒子
+  particles.forEach(pt => {
+    ctx.fillStyle = pt.color;
+    ctx.globalAlpha = pt.life;
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+
+  // 绘制飘字
+  combos.forEach(c => {
+    ctx.fillStyle = '#ffd700';
+    ctx.globalAlpha = c.life;
+    ctx.font = 'bold 20px "Microsoft YaHei"';
+    ctx.textAlign = 'center';
+    ctx.fillText(c.text, c.x, c.y);
+  });
+  ctx.globalAlpha = 1;
+
+  // HUD - 大小指示器
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '13px "Microsoft YaHei"';
+  ctx.textAlign = 'right';
+  ctx.fillText('东哥尺寸: ' + playerScale.toFixed(1) + 'x', W - 15, 25);
+
+  gameLoopId = requestAnimationFrame(gameLoop);
+}
+
+/* ── 开始游戏 ── */
+function startGame() {
+  initGameState();
+  document.getElementById('gameStartOverlay').style.display = 'none';
+  document.getElementById('gameOverOverlay').style.display = 'none';
+  document.getElementById('gameScoreDisplay').textContent = '0';
+  document.getElementById('sizeDisplay').textContent = '1.0x';
+
+  // 初始生成一些猎物
+  for (let i = 0; i < 8; i++) spawnPrey();
+
+  if (gameLoopId) cancelAnimationFrame(gameLoopId);
+  gameLoop();
+}
+
+/* ── 游戏结束 ── */
+function endGame() {
+  gameRunning = false;
+  if (gameLoopId) cancelAnimationFrame(gameLoopId);
+
+  // 保存最高分
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('dongsAquariumHighScore', highScore);
+  }
+
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('gameScoreDisplay').textContent = score;
+
+  const overlay = document.getElementById('gameOverOverlay');
+  overlay.style.display = 'flex';
+
+  if (score >= 200) {
+    document.getElementById('gameOverTitle').textContent = '🐟 水族之王！东哥无敌！🐟';
+    document.getElementById('gameOverMsg').textContent = '你是真正的吃鱼高手！赶紧下单奖励自己吧！';
+  } else if (score >= 100) {
+    document.getElementById('gameOverTitle').textContent = '👏 不错哦！';
+    document.getElementById('gameOverMsg').textContent = '东哥吃了不少！再来一局挑战更高分？';
+  } else {
+    document.getElementById('gameOverTitle').textContent = '😅 继续加油！';
+    document.getElementById('gameOverMsg').textContent = '东哥还没吃饱呢～再试一次？';
+  }
+}
+
+// 定时增大难度：猎物逐渐变快，最终游戏结束
+let difficultyTimer;
+function scheduleDifficulty() {
+  // 游戏不会自动结束，让玩家一直玩
+  // 但猎物速度会逐渐提升
+  if (gameRunning) {
+    // 随积分提升猎物速度
+    PREY_TYPES.forEach(t => { t.baseSpeed = Math.min(t.baseSpeed, 5); });
+  }
+}
+
+// 鼠标点击也能吃（点击附近的猎物）
+canvas.addEventListener('click', function(e) {
+  if (!gameRunning) return;
+  // 给一个速度爆发
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  const cx = (e.clientX - rect.left) * scaleX;
+  const cy = (e.clientY - rect.top) * scaleY;
+  // 瞬移到点击位置附近
+  targetX = cx;
+  targetY = cy;
+  playerX += (cx - playerX) * 0.5;
+  playerY += (cy - playerY) * 0.5;
+});
+
+// 键盘控制 WASD / 方向键
+const keys = {};
+document.addEventListener('keydown', function(e) {
+  keys[e.key] = true;
+  if (!gameRunning && (e.key === ' ' || e.key === 'Enter')) {
+    startGame();
+  }
+});
+document.addEventListener('keyup', function(e) { keys[e.key] = false; });
+
+// 键盘移动
+function keyboardMove() {
+  if (!gameRunning) { requestAnimationFrame(keyboardMove); return; }
+  const speed = 6;
+  if (keys['ArrowLeft'] || keys['a'] || keys['A']) targetX -= speed;
+  if (keys['ArrowRight'] || keys['d'] || keys['D']) targetX += speed;
+  if (keys['ArrowUp'] || keys['w'] || keys['W']) targetY -= speed;
+  if (keys['ArrowDown'] || keys['s'] || keys['S']) targetY += speed;
+  targetX = Math.max(0, Math.min(W, targetX));
+  targetY = Math.max(0, Math.min(H, targetY));
+  requestAnimationFrame(keyboardMove);
+}
+keyboardMove();
+
+// 照片加载完成后初始化绘制
+dongImg.onload = function() {
+  // 画初始帧
+  initGameState();
+  ctx.clearRect(0, 0, W, H);
+  drawBackground();
+  // 画几个初始猎物
+  for (let i = 0; i < 5; i++) {
+    const type = PREY_TYPES[i];
+    preyList.push({
+      type, x: 100 + i * 140, y: 200 + Math.sin(i) * 80,
+      vx: (Math.random() - 0.5) * 1, vy: (Math.random() - 0.5) * 1,
+      size: type.baseSize, alive: true, wobble: i, wobbleSpeed: 0.03
+    });
+  }
+  preyList.forEach(p => drawPrey(p));
+  drawDongFish();
+  // 恢复
+  preyList = [];
+  initGameState();
+};
+
+console.log('🐟 张润东大鱼吃小鱼游戏已就绪！');
+console.log('🖱️ 鼠标控制 | ⌨️ WASD/方向键控制 | 📱 支持触屏');
+console.log('👑 吃掉所有水族馆小伙伴，东哥的头会越来越大！');
+</script>
+
+</body>
+</html>
