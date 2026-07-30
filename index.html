@@ -685,14 +685,14 @@ const H = canvas.height;
 /* ── 猎物类型 ── */
 // level: 1=小(随便吃) 2=中(稍大才能吃) 3=同体型(长大了才能吃) 4=大(危险！比你大就吃你)
 const PREY_TYPES = [
-  { name: '寄居蟹', emoji: '🦀', bodyColor: '#e8b88a', shellColor: '#c4956a', points: 10, baseSpeed: 2.2, baseSize: 20, level: 1 },
-  { name: '小龙虾', emoji: '🦞', bodyColor: '#e74c3c', shellColor: '#c0392b', points: 15, baseSpeed: 2.8, baseSize: 22, level: 1 },
-  { name: '鲶鱼',    emoji: '🐟', bodyColor: '#95a5a6', shellColor: '#7f8c8d', points: 10, baseSpeed: 3.2, baseSize: 20, level: 2 },
-  { name: '乌龟',    emoji: '🐢', bodyColor: '#2ecc71', shellColor: '#1e8449', points: 25, baseSpeed: 1.3, baseSize: 28, level: 2 },
-  { name: '小鳄雀鳝', emoji: '🐊', bodyColor: '#5d6d7e', shellColor: '#2c3e50', points: 20, baseSpeed: 3.0, baseSize: 35, level: 3 },
-  { name: '大鲶鱼',  emoji: '🐟', bodyColor: '#555',    shellColor: '#333',    points: 30, baseSpeed: 2.8, baseSize: 50, level: 3 },
-  { name: '大鳄雀鳝', emoji: '🦈', bodyColor: '#444',    shellColor: '#222',    points: 40, baseSpeed: 3.0, baseSize: 55, level: 4 },
-  { name: '食人鱼',  emoji: '🦈', bodyColor: '#c0392b', shellColor: '#922b21', points: 50, baseSpeed: 3.5, baseSize: 60, level: 4 }
+  { name: '寄居蟹', emoji: '🦀', bodyColor: '#e8b88a', shellColor: '#c4956a', points: 5,  baseSpeed: 1.5, baseSize: 14, level: 1 },
+  { name: '小龙虾', emoji: '🦞', bodyColor: '#e74c3c', shellColor: '#c0392b', points: 8,  baseSpeed: 1.8, baseSize: 15, level: 1 },
+  { name: '鲶鱼',    emoji: '🐟', bodyColor: '#95a5a6', shellColor: '#7f8c8d', points: 8,  baseSpeed: 2.0, baseSize: 16, level: 2 },
+  { name: '乌龟',    emoji: '🐢', bodyColor: '#2ecc71', shellColor: '#1e8449', points: 15, baseSpeed: 0.8, baseSize: 20, level: 2 },
+  { name: '小鳄雀鳝', emoji: '🐊', bodyColor: '#5d6d7e', shellColor: '#2c3e50', points: 15, baseSpeed: 2.2, baseSize: 30, level: 3 },
+  { name: '大鲶鱼',  emoji: '🐟', bodyColor: '#555',    shellColor: '#333',    points: 25, baseSpeed: 2.0, baseSize: 48, level: 3 },
+  { name: '大鳄雀鳝', emoji: '🦈', bodyColor: '#444',    shellColor: '#222',    points: 35, baseSpeed: 2.2, baseSize: 55, level: 4 },
+  { name: '食人鱼',  emoji: '🦈', bodyColor: '#c0392b', shellColor: '#922b21', points: 45, baseSpeed: 2.5, baseSize: 62, level: 4 }
 ];
 
 /* ── 游戏状态 ── */
@@ -729,20 +729,14 @@ function playerSize() { return BASE_SIZE * playerScale; }
 /* ── 生成猎物 ── */
 function spawnPrey() {
   if (!gameRunning) return;
-  // 根据玩家当前大小选择生成的鱼的类型
-  const pSize = playerScale; // 1.0 ~ 3.0
-  let type;
-  // 60%概率生成比自己小的，25%同体型，15%可能比自己大
+  // 大鱼更多：40%小鱼 30%同体型 30%天敌
   const roll = Math.random();
-  if (roll < 0.60 || pSize < 1.3) {
-    // 生成小猎物(level 1-2)
-    type = PREY_TYPES[Math.floor(Math.random() * 4)]; // 寄居蟹/小龙虾/鲶鱼/乌龟
-  } else if (roll < 0.85) {
-    // 同体型(level 3)
-    type = PREY_TYPES[4 + Math.floor(Math.random() * 2)]; // 小鳄雀鳝/大鲶鱼
+  if (roll < 0.40) {
+    type = PREY_TYPES[Math.floor(Math.random() * 4)]; // level 1-2 小鱼
+  } else if (roll < 0.70) {
+    type = PREY_TYPES[4 + Math.floor(Math.random() * 2)]; // level 3 同体型
   } else {
-    // 大猎物/天敌(level 4)
-    type = PREY_TYPES[6 + Math.floor(Math.random() * 2)]; // 大鳄雀鳝/食人鱼
+    type = PREY_TYPES[6 + Math.floor(Math.random() * 2)]; // level 4 天敌
   }
   const size = type.baseSize + Math.random() * 10;
   const fromEdge = Math.floor(Math.random() * 4);
@@ -1278,9 +1272,9 @@ function checkCollision(prey) {
 function gameLoop() {
   if (!gameRunning) return;
 
-  // 平滑移动
-  playerX += (targetX - playerX) * 0.08;
-  playerY += (targetY - playerY) * 0.08;
+  // 平滑移动（降低速度）
+  playerX += (targetX - playerX) * 0.05;
+  playerY += (targetY - playerY) * 0.05;
 
   // 边界限制
   playerX = Math.max(playerSize() * 0.5, Math.min(W - playerSize() * 0.5, playerX));
@@ -1322,7 +1316,7 @@ function gameLoop() {
         // ✅ 比东哥小 → 吃掉！
         p.alive = false;
         score += p.type.points;
-        const newScale = Math.min(MAX_SCALE, 1 + Math.floor(score / 50) * 0.25);
+        const newScale = Math.min(MAX_SCALE, 1 + Math.floor(score / 100) * 0.25);
         if (newScale > playerScale) {
           playerScale = newScale;
           document.getElementById('sizeDisplay').textContent = playerScale.toFixed(1) + 'x';
@@ -1371,8 +1365,8 @@ function gameLoop() {
     if (combos[i].life <= 0) combos.splice(i, 1);
   }
 
-  // 生成猎物 (保持屏幕上有10-15个)
-  if (preyList.length < 10 + Math.floor(Math.random() * 6)) {
+  // 保持屏幕上有12-18条鱼
+  if (preyList.length < 12 + Math.floor(Math.random() * 7)) {
     spawnPrey();
   }
 
@@ -1501,7 +1495,7 @@ document.addEventListener('keyup', function(e) { keys[e.key] = false; });
 // 键盘移动
 function keyboardMove() {
   if (!gameRunning) { requestAnimationFrame(keyboardMove); return; }
-  const speed = 6;
+  const speed = 4;
   if (keys['ArrowLeft'] || keys['a'] || keys['A']) targetX -= speed;
   if (keys['ArrowRight'] || keys['d'] || keys['D']) targetX += speed;
   if (keys['ArrowUp'] || keys['w'] || keys['W']) targetY -= speed;
