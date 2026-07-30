@@ -729,11 +729,11 @@ function playerSize() { return BASE_SIZE * playerScale; }
 /* ── 生成猎物 ── */
 function spawnPrey() {
   if (!gameRunning) return;
-  // 大鱼更多：40%小鱼 30%同体型 30%天敌
+  // 大鱼适量：55%小鱼 25%同体型 20%天敌
   const roll = Math.random();
-  if (roll < 0.40) {
+  if (roll < 0.55) {
     type = PREY_TYPES[Math.floor(Math.random() * 4)]; // level 1-2 小鱼
-  } else if (roll < 0.70) {
+  } else if (roll < 0.80) {
     type = PREY_TYPES[4 + Math.floor(Math.random() * 2)]; // level 3 同体型
   } else {
     type = PREY_TYPES[6 + Math.floor(Math.random() * 2)]; // level 4 天敌
