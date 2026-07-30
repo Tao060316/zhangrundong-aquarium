@@ -920,14 +920,24 @@ function drawDongFish() {
   ctx.clip();
 
   if (dongImg.complete && dongImg.naturalWidth > 0) {
-    // 照片填满圆形
-    const minDim = Math.min(dongImg.naturalWidth, dongImg.naturalHeight);
-    const imgScale = headRadius * 2.3 / minDim;
-    const iw = dongImg.naturalWidth * imgScale;
-    const ih = dongImg.naturalHeight * imgScale;
+    // 🔪 从照片中裁出头部区域（照片上部1/2居中位置=人脸）
+    const iw = dongImg.naturalWidth;
+    const ih = dongImg.naturalHeight;
+    // 取照片上部50%区域（人脸通常在照片上半部中间）
+    const srcH = ih * 0.55;
+    const srcW = iw;
+    const srcX = 0;
+    const srcY = 0; // 从顶部开始取
+    // 如果照片是横的，则居中裁剪正方形
+    const cropSize = Math.min(srcW, srcH);
+    const cropX = (iw - cropSize) / 2;
+    const cropY = 0;
     // P图效果：提亮+暖色调
     ctx.filter = 'brightness(1.2) contrast(1.1) saturate(1.3)';
-    ctx.drawImage(dongImg, headX - iw / 2, headY - ih / 2, iw, ih);
+    ctx.drawImage(dongImg,
+      cropX, cropY, cropSize, cropSize,  // 源：照片上部正方形区域
+      headX - headRadius, headY - headRadius, headRadius * 2, headRadius * 2  // 目标：填满圆
+    );
     ctx.filter = 'none';
   } else {
     // 加载中占位
