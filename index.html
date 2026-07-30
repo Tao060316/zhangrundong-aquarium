@@ -643,6 +643,31 @@ document.querySelectorAll('.count-up').forEach(el => {
 <script>
 /* ── 预加载张润东照片 ── */
 const dongImg = new Image();
+dongImg.crossOrigin = 'anonymous';
+dongImg.onerror = function() {
+  console.warn('张润东照片加载失败，使用默认头像');
+};
+dongImg.onload = function() {
+  console.log('✅ 张润东照片加载成功！尺寸:', dongImg.naturalWidth, 'x', dongImg.naturalHeight);
+  // 绘制初始帧
+  if (!gameRunning) {
+    initGameState();
+    gameRunning = false; // 保持游戏未开始状态
+    ctx.clearRect(0, 0, W, H);
+    drawBackground();
+    for (let i = 0; i < 5; i++) {
+      const type = PREY_TYPES[i];
+      preyList.push({
+        type, x: 100 + i * 140, y: 200 + Math.sin(i) * 80,
+        vx: (Math.random() - 0.5) * 1, vy: (Math.random() - 0.5) * 1,
+        size: type.baseSize, alive: true, wobble: i, wobbleSpeed: 0.03
+      });
+    }
+    preyList.forEach(p => drawPrey(p));
+    drawDongFish();
+    preyList = [];
+  }
+};
 dongImg.src = '微信图片_20220726180053.jpg';
 
 /* ── 画布 & 上下文 ── */
@@ -888,9 +913,9 @@ function drawDongFish() {
   ctx.shadowBlur = 0;
   ctx.shadowOffsetY = 0;
 
-  // --- 头部: 张润东照片（圆形裁剪） ---
-  const headRadius = size * 0.38;
-  const headX = size * 0.55;
+  // --- 头部: 张润东照片（大圆形裁剪，确保清晰可见） ---
+  const headRadius = size * 0.55;  // 更大的头，让张润东照片更明显
+  const headX = size * 0.5;
   const headY = 0;
   ctx.save();
   ctx.beginPath();
@@ -899,28 +924,29 @@ function drawDongFish() {
   ctx.clip();
   // 绘制照片
   if (dongImg.complete && dongImg.naturalWidth > 0) {
-    const imgScale = headRadius * 2 / Math.min(dongImg.naturalWidth, dongImg.naturalHeight);
+    // 以照片短边为基准填满圆形区域
+    const minDim = Math.min(dongImg.naturalWidth, dongImg.naturalHeight);
+    const imgScale = headRadius * 2.2 / minDim;
     const iw = dongImg.naturalWidth * imgScale;
     const ih = dongImg.naturalHeight * imgScale;
     ctx.drawImage(dongImg, headX - iw / 2, headY - ih / 2, iw, ih);
   } else {
-    // 照片未加载时用颜色填充
+    // 照片未加载时用颜色填充+文字提示
     const faceGrad = ctx.createRadialGradient(headX, headY, headRadius * 0.1, headX, headY, headRadius);
     faceGrad.addColorStop(0, '#fdbcb4');
     faceGrad.addColorStop(1, '#e8a090');
     ctx.fillStyle = faceGrad;
     ctx.fill();
-    // 简易五官
-    ctx.fillStyle = '#000';
-    ctx.beginPath(); ctx.arc(headX - headRadius * 0.25, headY - headRadius * 0.15, headRadius * 0.08, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(headX + headRadius * 0.25, headY - headRadius * 0.15, headRadius * 0.08, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(headX, headY + headRadius * 0.2, headRadius * 0.12, 0, Math.PI); ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${headRadius*0.5}px "Microsoft YaHei"`;
+    ctx.textAlign = 'center';
+    ctx.fillText('东', headX, headY + headRadius*0.15);
   }
   ctx.restore();
 
   // 照片边框
   ctx.strokeStyle = '#ffd700';
-  ctx.lineWidth = size * 0.04;
+  ctx.lineWidth = size * 0.05;
   ctx.beginPath();
   ctx.arc(headX, headY, headRadius, 0, Math.PI * 2);
   ctx.stroke();
@@ -1350,27 +1376,6 @@ function keyboardMove() {
 }
 keyboardMove();
 
-// 照片加载完成后初始化绘制
-dongImg.onload = function() {
-  // 画初始帧
-  initGameState();
-  ctx.clearRect(0, 0, W, H);
-  drawBackground();
-  // 画几个初始猎物
-  for (let i = 0; i < 5; i++) {
-    const type = PREY_TYPES[i];
-    preyList.push({
-      type, x: 100 + i * 140, y: 200 + Math.sin(i) * 80,
-      vx: (Math.random() - 0.5) * 1, vy: (Math.random() - 0.5) * 1,
-      size: type.baseSize, alive: true, wobble: i, wobbleSpeed: 0.03
-    });
-  }
-  preyList.forEach(p => drawPrey(p));
-  drawDongFish();
-  // 恢复
-  preyList = [];
-  initGameState();
-};
 
 // 移动端兼容：同时绑定click和touchend
 document.getElementById('btnStartGame').addEventListener('click', startGame);
