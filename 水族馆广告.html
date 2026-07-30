@@ -926,12 +926,13 @@ function drawDongFish() {
   ctx.clip();
 
   if (dongImgLoaded && dongImg.naturalWidth > 0) {
-    // 🔪 从照片中裁出头部（照片上部=人脸区域）
+    // 📷 整张照片塞满圆形鱼头 — 完整脸部
     const iw = dongImg.naturalWidth;
     const ih = dongImg.naturalHeight;
-    const cropSize = Math.min(iw, ih * 0.55);
+    // 取照片短边做正方形，居中裁剪 = 整张脸都进去
+    const cropSize = Math.min(iw, ih);
     const cropX = (iw - cropSize) / 2;
-    const cropY = 0;
+    const cropY = (ih - cropSize) / 2;
     ctx.drawImage(dongImg,
       cropX, cropY, cropSize, cropSize,
       headX - headRadius, headY - headRadius, headRadius * 2, headRadius * 2
