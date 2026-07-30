@@ -643,16 +643,14 @@ document.querySelectorAll('.count-up').forEach(el => {
 <script>
 /* ── 预加载张润东照片 ── */
 const dongImg = new Image();
-dongImg.crossOrigin = 'anonymous';
-dongImg.onerror = function() {
-  console.warn('张润东照片加载失败，使用默认头像');
-};
+let dongImgLoaded = false;
 dongImg.onload = function() {
+  dongImgLoaded = true;
   console.log('✅ 张润东照片加载成功！尺寸:', dongImg.naturalWidth, 'x', dongImg.naturalHeight);
-  // 绘制初始帧
+  // 画静态初始帧
   if (!gameRunning) {
     initGameState();
-    gameRunning = false; // 保持游戏未开始状态
+    gameRunning = false;
     ctx.clearRect(0, 0, W, H);
     drawBackground();
     for (let i = 0; i < 5; i++) {
@@ -666,6 +664,14 @@ dongImg.onload = function() {
     preyList.forEach(p => drawPrey(p));
     drawDongFish();
     preyList = [];
+  }
+};
+dongImg.onerror = function() {
+  console.error('❌ 张润东照片加载失败！路径:', dongImg.src);
+  // 尝试用原始URL重试
+  if (dongImg.src.indexOf('raw.githubusercontent') === -1) {
+    console.log('🔄 尝试备用URL...');
+    dongImg.src = 'https://raw.githubusercontent.com/Tao060316/zhangrundong-aquarium/master/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20220726180053.jpg';
   }
 };
 dongImg.src = '微信图片_20220726180053.jpg';
@@ -919,26 +925,17 @@ function drawDongFish() {
   ctx.closePath();
   ctx.clip();
 
-  if (dongImg.complete && dongImg.naturalWidth > 0) {
-    // 🔪 从照片中裁出头部区域（照片上部1/2居中位置=人脸）
+  if (dongImgLoaded && dongImg.naturalWidth > 0) {
+    // 🔪 从照片中裁出头部（照片上部=人脸区域）
     const iw = dongImg.naturalWidth;
     const ih = dongImg.naturalHeight;
-    // 取照片上部50%区域（人脸通常在照片上半部中间）
-    const srcH = ih * 0.55;
-    const srcW = iw;
-    const srcX = 0;
-    const srcY = 0; // 从顶部开始取
-    // 如果照片是横的，则居中裁剪正方形
-    const cropSize = Math.min(srcW, srcH);
+    const cropSize = Math.min(iw, ih * 0.55);
     const cropX = (iw - cropSize) / 2;
     const cropY = 0;
-    // P图效果：提亮+暖色调
-    ctx.filter = 'brightness(1.2) contrast(1.1) saturate(1.3)';
     ctx.drawImage(dongImg,
-      cropX, cropY, cropSize, cropSize,  // 源：照片上部正方形区域
-      headX - headRadius, headY - headRadius, headRadius * 2, headRadius * 2  // 目标：填满圆
+      cropX, cropY, cropSize, cropSize,
+      headX - headRadius, headY - headRadius, headRadius * 2, headRadius * 2
     );
-    ctx.filter = 'none';
   } else {
     // 加载中占位
     const g = ctx.createRadialGradient(headX, headY, headRadius * 0.1, headX, headY, headRadius);
